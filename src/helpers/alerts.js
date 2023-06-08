@@ -15,3 +15,17 @@ export const errorAlert = (text) => {
     text,
   });
 };
+
+export const confirmAlert = (callback) => {
+  Swal.fire({
+    title: "Are you sure?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes",
+    cancelButtonText: "No",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      callback();
+    }
+  });
+};
