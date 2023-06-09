@@ -4,7 +4,7 @@ import { errorAlert, successAlert } from "../../helpers/alerts";
 import instance from "../../helpers/fetchWrapper";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-const url = process.env.REACT_APP_BACKEND_URL + "/developers/";
+const url = process.env.REACT_APP_BACKEND_URL + "/storage/developers/";
 
 const DeveloperForm = ({ mode }) => {
   const [formState, setFormState] = useState({});

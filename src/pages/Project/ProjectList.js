@@ -4,7 +4,7 @@ import instance from "../../helpers/fetchWrapper";
 import { confirmAlert, errorAlert, successAlert } from "../../helpers/alerts";
 import CustomTable from "../../components/CustomTable";
 
-const url = process.env.REACT_APP_BACKEND_URL + "/projects/";
+const url = process.env.REACT_APP_BACKEND_URL + "/storage/projects/";
 
 const ProjectList = () => {
   const [projects, setprojects] = useState([]);
