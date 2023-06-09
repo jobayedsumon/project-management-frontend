@@ -4,24 +4,24 @@ import { errorAlert, successAlert } from "../../helpers/alerts";
 import instance from "../../helpers/fetchWrapper";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-const url = process.env.REACT_APP_BACKEND_URL + "/developers/";
+const url = process.env.REACT_APP_BACKEND_URL + "/projects/";
 
-const DeveloperForm = ({ mode }) => {
+const ProjectForm = ({ mode }) => {
   const [formState, setFormState] = useState({});
-  const [projects, setProjects] = useState([]);
+  const [developers, setDevelopers] = useState([]);
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
   const fileRef = useRef(null);
 
-  const addNewDeveloper = (formData) => {
+  const createNewProject = (formData) => {
     instance
-      .post("/developers", formData)
+      .post("/projects", formData)
       .then((res) => {
         if (res.status === 201) {
           successAlert(res.data.message);
-          const developer = res.data.data;
-          navigate(`/developers/${developer.id}`);
+          const project = res.data.data;
+          navigate(`/projects/${project.id}`);
         } else {
           errorAlert(res.data.message);
         }
@@ -31,10 +31,10 @@ const DeveloperForm = ({ mode }) => {
       });
   };
 
-  const updateDeveloper = (formData) => {
+  const updateProject = (formData) => {
     formData.append("_method", "PUT");
     instance
-      .post(`/developers/${id}`, formData)
+      .post(`/projects/${id}`, formData)
       .then((res) => {
         if (res.status === 200) {
           successAlert(res.data.message);
@@ -47,21 +47,21 @@ const DeveloperForm = ({ mode }) => {
       });
   };
 
-  const getDeveloper = (id) => {
+  const getProject = (id) => {
     instance
-      .get(`/developers/${id}`)
+      .get(`/projects/${id}`)
       .then((res) => {
         if (res.status === 200) {
-          const developer = res.data.data;
+          const project = res.data.data;
           setFormState({
-            name: developer.name,
-            designation: developer.designation,
-            email: developer.email,
-            phone: developer.phone,
-            project_ids: developer.projects?.map((project) => project.id),
+            name: project.name,
+            description: project.description,
+            start_date: project.start_date,
+            end_date: project.end_date,
+            developer_ids: project.developers?.map((developer) => developer.id),
           });
-          if (developer.image) {
-            setImage(url + developer.image);
+          if (project.image) {
+            setImage(url + project.image);
           }
         } else {
           errorAlert(res.data.message);
@@ -72,24 +72,24 @@ const DeveloperForm = ({ mode }) => {
       });
   };
 
-  const getProjects = () => {
+  const getDevelopers = () => {
     instance
-      .get("/projects")
+      .get("/developers")
       .then((res) => {
         if (res.status === 200) {
-          const projects = res.data.data;
-          setProjects(
-            projects.map((project) => ({
-              value: project.id,
-              label: project.name,
+          const developers = res.data.data;
+          setDevelopers(
+            developers.map((developer) => ({
+              value: developer.id,
+              label: developer.name,
             }))
           );
         } else {
-          setProjects([]);
+          setDevelopers([]);
         }
       })
       .catch((err) => {
-        setProjects([]);
+        setDevelopers([]);
       });
   };
 
@@ -105,28 +105,28 @@ const DeveloperForm = ({ mode }) => {
       errorAlert("Name is required");
       return;
     }
-    if (!formState.email) {
-      errorAlert("Email is required");
+    if (!formState.start_date) {
+      errorAlert("Start date is required");
       return;
     }
-    if (!formState.phone) {
-      errorAlert("Phone is required");
+    if (!formState.end_date) {
+      errorAlert("End date is required");
       return;
     }
 
-    if (!formState.designation) {
-      errorAlert("Designation is required");
+    if (formState.start_date > formState.end_date) {
+      errorAlert("Start date cannot be greater than end date");
       return;
     }
 
     const formData = new FormData();
     formData.append("name", formState.name);
-    formData.append("designation", formState.designation);
-    formData.append("email", formState.email);
-    formData.append("phone", formState.phone);
+    formData.append("description", formState.description);
+    formData.append("start_date", formState.start_date);
+    formData.append("end_date", formState.end_date);
 
-    if (formState.project_ids) {
-      formData.append("project_ids", formState.project_ids);
+    if (formState.developer_ids) {
+      formData.append("developer_ids", formState.developer_ids);
     }
 
     if (image instanceof File) {
@@ -134,18 +134,18 @@ const DeveloperForm = ({ mode }) => {
     }
 
     if (mode === "edit") {
-      updateDeveloper(formData);
+      updateProject(formData);
     } else {
-      addNewDeveloper(formData);
+      createNewProject(formData);
     }
 
     fileRef.current.value = "";
   };
 
   useEffect(() => {
-    getProjects();
+    getDevelopers();
     if (mode === "edit" && id) {
-      getDeveloper(id);
+      getProject(id);
     }
   }, [mode, id]);
 
@@ -154,14 +154,14 @@ const DeveloperForm = ({ mode }) => {
       <div className="row">
         <div className="col-md-8">
           {mode === "edit" ? (
-            <h3>Update Developer Information</h3>
+            <h3>Update Project</h3>
           ) : (
-            <h3>Add New Developer</h3>
+            <h3>Create New Project</h3>
           )}
 
           <form className="mt-4">
             <div className="form-group mb-3">
-              <label>Name</label>
+              <label>Name*</label>
               <input
                 type="text"
                 className="form-control"
@@ -171,35 +171,26 @@ const DeveloperForm = ({ mode }) => {
               />
             </div>
             <div className="form-group mb-3">
-              <label>Designation</label>
+              <label>Start Date*</label>
               <input
-                type="text"
+                type="date"
                 className="form-control"
-                name="designation"
+                name="start_date"
                 onChange={handleChange}
-                value={formState.designation}
+                value={formState.start_date}
               />
             </div>
             <div className="form-group mb-3">
-              <label>Email</label>
+              <label>End Date*</label>
               <input
-                type="email"
+                type="date"
                 className="form-control"
-                name="email"
+                name="end_date"
                 onChange={handleChange}
-                value={formState.email}
+                value={formState.end_date}
               />
             </div>
-            <div className="form-group mb-3">
-              <label>Phone</label>
-              <input
-                type="text"
-                className="form-control"
-                name="phone"
-                onChange={handleChange}
-                value={formState.phone}
-              />
-            </div>
+
             <div className="form-group mb-3">
               <label>Image</label>
               <input
@@ -223,30 +214,40 @@ const DeveloperForm = ({ mode }) => {
               </div>
             )}
             <div className="form-group mb-3">
-              <label>Assign Projects</label>
+              <label>Assign Developers</label>
               <Select
                 isMulti
                 name="project_ids"
-                options={projects}
+                options={developers}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 isSearchable={true}
-                value={projects.filter((project) =>
-                  formState.project_ids?.includes(project.value)
+                value={developers.filter((developer) =>
+                  formState.developer_ids?.includes(developer.value)
                 )}
                 onChange={(selected) => {
                   setFormState({
                     ...formState,
-                    project_ids: selected.map((item) => item.value),
+                    developer_ids: selected.map((item) => item.value),
                   });
                 }}
               />
             </div>
+            <div className="form-group mb-3">
+              <label>Description</label>
+              <textarea
+                className="form-control"
+                name="description"
+                onChange={handleChange}
+                value={formState.description}
+                rows={5}
+              />
+            </div>
             <div className="form-group mt-4">
               <button className="btn btn-dark" onClick={handleSubmit}>
-                {mode === "edit" ? "Update" : "Add"}
+                {mode === "edit" ? "Update" : "Create"}
               </button>
-              <Link to="/developers" className="btn btn-danger ms-3">
+              <Link to="/projects" className="btn btn-danger ms-3">
                 Cancel
               </Link>
             </div>
@@ -257,4 +258,4 @@ const DeveloperForm = ({ mode }) => {
   );
 };
 
-export default DeveloperForm;
+export default ProjectForm;

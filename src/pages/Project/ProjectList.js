@@ -4,25 +4,24 @@ import instance from "../../helpers/fetchWrapper";
 import { confirmAlert, errorAlert, successAlert } from "../../helpers/alerts";
 import CustomTable from "../../components/CustomTable";
 
-const url = process.env.REACT_APP_BACKEND_URL + "/developers/";
+const url = process.env.REACT_APP_BACKEND_URL + "/projects/";
 
-const DeveloperList = () => {
-  const [developers, setDevelopers] = useState([]);
+const ProjectList = () => {
+  const [projects, setprojects] = useState([]);
 
   const columns = [
     {
-      name: "Developer",
+      name: "Project",
       selector: (row) => (
         <span>
           {row.image ? (
             <img
               src={url + row.image}
               alt={row.name}
-              width={50}
               className="img-fluid rounded-circle tableRoundImage"
             />
           ) : (
-            <i className="fa fa-user mx-3" />
+            <i className="fa fa-project-diagram mx-3" />
           )}{" "}
           {row.name}
         </span>
@@ -30,37 +29,36 @@ const DeveloperList = () => {
     },
 
     {
-      name: "Designation",
-      selector: (row) => row.designation,
-      sortable: true,
+      name: "Description",
+      selector: (row) => row.description?.substring(0, 100),
     },
 
     {
-      name: "Email",
-      selector: (row) => row.email,
+      name: "Start Date",
+      selector: (row) => row.start_date,
       sortable: true,
     },
     {
-      name: "Phone",
-      selector: (row) => row.phone,
+      name: "End Date",
+      selector: (row) => row.end_date,
       sortable: true,
     },
     {
-      name: "Projects Assigned",
-      selector: (row) => row.projects_count,
+      name: "Developers Assigned",
+      selector: (row) => row.developers_count,
       sortable: true,
     },
     {
       name: "Actions",
       selector: (row) => (
         <span>
-          <Link className="text-success" to={`/developers/${row.id}`}>
+          <Link className="text-success" to={`/projects/${row.id}`}>
             <i className="fa fa-edit" />
           </Link>
           &nbsp;&nbsp;
           <Link
             className="text-danger"
-            onClick={() => confirmAlert(() => deleteDeveloper(row.id))}
+            onClick={() => confirmAlert(() => deleteProject(row.id))}
           >
             <i className="fa fa-trash" />
           </Link>
@@ -69,13 +67,13 @@ const DeveloperList = () => {
     },
   ];
 
-  const deleteDeveloper = (id) => {
+  const deleteProject = (id) => {
     instance
-      .delete(`/developers/${id}`)
+      .delete(`/projects/${id}`)
       .then((res) => {
         if (res.status === 200) {
           successAlert(res.data.message);
-          fetchDevelopers();
+          fetchprojects();
         } else {
           errorAlert(res.data.message);
         }
@@ -85,38 +83,38 @@ const DeveloperList = () => {
       });
   };
 
-  const fetchDevelopers = async () => {
+  const fetchprojects = async () => {
     instance
-      .get("/developers")
+      .get("/projects")
       .then((response) => {
         if (response.status === 200) {
-          setDevelopers(response.data.data);
+          setprojects(response.data.data);
         } else {
-          setDevelopers([]);
+          setprojects([]);
         }
       })
       .catch((error) => {
-        setDevelopers([]);
+        setprojects([]);
       });
   };
 
   useEffect(() => {
-    fetchDevelopers();
+    fetchprojects();
 
     return () => {
-      setDevelopers([]);
+      setprojects([]);
     };
   }, []);
 
   return (
     <CustomTable
       columns={columns}
-      data={developers}
-      title="Developers List"
-      buttonLink="/developers/new"
-      buttonText="Add Developer"
+      data={projects}
+      title="Projects List"
+      buttonLink="/projects/new"
+      buttonText="Create Project"
     />
   );
 };
 
-export default DeveloperList;
+export default ProjectList;

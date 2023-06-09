@@ -37,7 +37,7 @@ const Login = () => {
 
   return (
     <div className="container h-100 d-flex flex-column justify-content-center align-items-center">
-      <h3 className="mb-4">Project Management</h3>
+      <h1 className="mb-4">Project Management</h1>
       <div className="card w-50">
         <div className="card-body">
           <h5 className="card-title mb-4">Login</h5>
@@ -65,7 +65,7 @@ const Login = () => {
                 required
               />
             </div>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-dark">
               Login
             </button>
           </form>

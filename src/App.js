@@ -6,6 +6,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import DeveloperList from "./pages/Developer/DeveloperList";
 import DeveloperForm from "./pages/Developer/DeveloperForm";
+import ProjectList from "./pages/Project/ProjectList";
+import ProjectForm from "./pages/Project/ProjectForm";
 
 function App() {
   return (
@@ -39,6 +41,30 @@ function App() {
         element={
           <ProtectedRoute>
             <DeveloperForm mode="edit" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects"
+        element={
+          <ProtectedRoute>
+            <ProjectList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/new"
+        element={
+          <ProtectedRoute>
+            <ProjectForm mode="create" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:id"
+        element={
+          <ProtectedRoute>
+            <ProjectForm mode="edit" />
           </ProtectedRoute>
         }
       />
