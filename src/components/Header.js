@@ -30,7 +30,7 @@ const Header = () => {
         </Navbar.Brand>
         {isAuthenticated && (
           <NavDropdown
-            title={`Welcome, ${user.name}`}
+            title={`Welcome, ${user?.name}`}
             id="collasible-nav-dropdown"
             className="text-white"
           >
